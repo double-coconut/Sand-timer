@@ -5,7 +5,8 @@
     "main": "src/app.js",
     "scripts": {
         "generateAssets": "node nodeScripts/GenerateAssets.js",
-        "start": "npm run generateAssets && webpack serve --config webpack/webpack.dev.js",
+        "startGen": "npm run generateAssets && webpack serve --config webpack/webpack.dev.js",
+        "start": "webpack serve --config webpack/webpack.dev.js",
         "build": "webpack --config webpack/webpack.prod.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "lint": "eslint . --ext .ts",

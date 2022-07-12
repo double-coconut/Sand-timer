@@ -48,7 +48,7 @@ module.exports = {
         new CopyWebpackPlugin({
             patterns: [
                 { from: "./src/assets/assetsNames", to: "assets/assetsNames" },
-                { from: "./src/assets/audio", to: "assets/audio" },
+                // { from: "./src/assets/audio", to: "assets/audio" },
                 { from: "./src/assets/uncompressed", to: "assets/uncompressed" },
                 { from: "./src/assets/spriteSheets", to: "assets/spriteSheets" },
                 // PLEASE UNCOMMENT THESE, IF YOU NEED THEM

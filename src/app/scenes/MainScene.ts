@@ -1,26 +1,26 @@
-import { IocContext } from "power-di";
+//import { IocContext } from "power-di";
 import * as Stats from "stats.js";
 import { SceneNames } from "../enums/Scenes";
-import { PopupService } from "../services/PopupService";
-import { ForegroundView } from "../views/ForegroundView";
+//import { PopupService } from "../services/PopupService";
+//import { ForegroundView } from "../views/ForegroundView";
 import { GameView } from "../views/GameView";
-import { UIView } from "../views/UIView";
+//import { UIView } from "../views/UIView";
 
 export default class MainScene extends Phaser.Scene {
     private gameView: GameView;
-    private uiView: UIView;
-    private foregroundView: ForegroundView;
-    private popupService: PopupService;
+    //private uiView: UIView;
+    //private foregroundView: ForegroundView;
+    //private popupService: PopupService;
 
     public constructor() {
         super({ key: SceneNames.Main });
     }
 
     private init(): void {
-        this.initServices();
+        //this.initServices();
         this.initGameView();
-        this.initUIView();
-        this.initForegroundView();
+        //this.initUIView();
+        //this.initForegroundView();
 
         if (process.env.NODE_ENV !== "production") {
             this.initStatJS();
@@ -32,22 +32,22 @@ export default class MainScene extends Phaser.Scene {
         this.add.existing(this.gameView);
     }
 
-    private initUIView(): void {
-        this.uiView = new UIView(this);
-        this.add.existing(this.uiView);
-    }
+    // private initUIView(): void {
+    //     this.uiView = new UIView(this);
+    //     this.add.existing(this.uiView);
+    // }
 
-    private initForegroundView(): void {
-        this.foregroundView = new ForegroundView(this);
-        this.add.existing(this.foregroundView);
+    // private initForegroundView(): void {
+    //     this.foregroundView = new ForegroundView(this);
+    //     this.add.existing(this.foregroundView);
+    //
+    //     this.popupService.view = this.foregroundView;
+    // }
 
-        this.popupService.view = this.foregroundView;
-    }
-
-    private initServices(): void {
-        this.popupService = IocContext.DefaultInstance.get(PopupService);
-        this.popupService.initialize();
-    }
+    // private initServices(): void {
+    //     this.popupService = IocContext.DefaultInstance.get(PopupService);
+    //     this.popupService.initialize();
+    // }
 
     private initStatJS(): void {
         const stats = new Stats();

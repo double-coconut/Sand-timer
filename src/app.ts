@@ -8,8 +8,8 @@ const config = {
     transparent: false,
     antialiasGL: false,
     type: Phaser.WEBGL,
-    width: 1920,
-    height: 1332,
+    width: 800,
+    height: 600,
     input: {
         mouse: {
             preventDefaultWheel: false,

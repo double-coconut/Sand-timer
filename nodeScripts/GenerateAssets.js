@@ -218,6 +218,7 @@ async function generateSpines() {
 }
 
 async function runPrettierOn(file) {
+    console.log(file);
     await exec(`prettier --write ${file}`);
 }
 
@@ -231,11 +232,11 @@ async function start() {
     console.log("generating audio assets");
     await generateAudioAssets();
     console.log("generating spines");
-    await generateSpines();
+    //await generateSpines();
     console.log("generating shaders");
-    await generateShaders();
+    //await generateShaders();
     console.log("generating videos");
-    await generateVideos();
+    //await generateVideos();
     console.log("asset generation complete");
     console.log("running the game");
 }
