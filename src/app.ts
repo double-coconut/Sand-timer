@@ -10,6 +10,15 @@ const config = {
     type: Phaser.WEBGL,
     width: 800,
     height: 600,
+    physics: {
+        default: "matter",
+        matter: {
+            debug: true,
+        },
+        gravity: {
+            x: 0.7,
+        },
+    },
     input: {
         mouse: {
             preventDefaultWheel: false,

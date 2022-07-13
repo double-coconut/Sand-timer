@@ -1,26 +1,30 @@
 //import { IocContext } from "power-di";
 import * as Stats from "stats.js";
 import { SceneNames } from "../enums/Scenes";
+import * as GAME from "../configs/Game";
 //import { PopupService } from "../services/PopupService";
 //import { ForegroundView } from "../views/ForegroundView";
 import { GameView } from "../views/GameView";
-//import { UIView } from "../views/UIView";
+import { UIView } from "../views/UIView";
 
 export default class MainScene extends Phaser.Scene {
     private gameView: GameView;
-    //private uiView: UIView;
+    private uiView: UIView;
     //private foregroundView: ForegroundView;
     //private popupService: PopupService;
+    private gameEvents: Phaser.Events.EventEmitter;
 
     public constructor() {
         super({ key: SceneNames.Main });
     }
 
     private init(): void {
+        this.gameEvents = new Phaser.Events.EventEmitter();
         //this.initServices();
         this.initGameView();
-        //this.initUIView();
+        this.initUIView();
         //this.initForegroundView();
+        this.handleEvents();
 
         if (process.env.NODE_ENV !== "production") {
             this.initStatJS();
@@ -32,10 +36,23 @@ export default class MainScene extends Phaser.Scene {
         this.add.existing(this.gameView);
     }
 
-    // private initUIView(): void {
-    //     this.uiView = new UIView(this);
-    //     this.add.existing(this.uiView);
-    // }
+    private initUIView(): void {
+        this.uiView = new UIView(this, this.gameEvents);
+        this.add.existing(this.uiView);
+    }
+
+    private handleEvents(): void {
+        this.gameEvents.on(GAME.EVENT.START, this.startClock, this);
+    }
+
+    private startClock(): void {
+        const dropDelay = (GAME.CLOCK_TIME * 1000) / GAME.PARTICLES_NUM;
+        const startTime = Date.now();
+        const timer = setInterval(() => {
+            this.gameView.dropParticle();
+            if (Date.now() > startTime + GAME.CLOCK_TIME * 1000) clearInterval(timer);
+        }, dropDelay);
+    }
 
     // private initForegroundView(): void {
     //     this.foregroundView = new ForegroundView(this);
