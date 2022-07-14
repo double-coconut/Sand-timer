@@ -29,7 +29,7 @@ export class UIView extends Phaser.GameObjects.Container {
     // handles Clicks and Touches
     private handleClicks(): void {
         this.scene.input.on("pointerup", (pointer) => {
-            if (pointer.leftButtonReleased()) this.gameEvents.emit(GAME.EVENT.START);
+            if (pointer.leftButtonReleased()) this.gameEvents.emit(GAME.EVENT.CLICK);
         });
     }
 }

@@ -10,9 +10,9 @@ import { UIView } from "../views/UIView";
 export default class MainScene extends Phaser.Scene {
     private gameView: GameView;
     private uiView: UIView;
-    //private foregroundView: ForegroundView;
-    //private popupService: PopupService;
+
     private gameEvents: Phaser.Events.EventEmitter;
+    private state = GAME.STATE.FILLING;
 
     public constructor() {
         super({ key: SceneNames.Main });
@@ -32,7 +32,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     private initGameView(): void {
-        this.gameView = new GameView(this);
+        this.gameView = new GameView(this, this.gameEvents);
         this.add.existing(this.gameView);
     }
 
@@ -42,7 +42,20 @@ export default class MainScene extends Phaser.Scene {
     }
 
     private handleEvents(): void {
-        this.gameEvents.on(GAME.EVENT.START, this.startClock, this);
+        this.gameEvents.on(GAME.EVENT.CLICK, () => {
+            if (this.state === GAME.STATE.READY) {
+                this.state = GAME.STATE.TICKING;
+                this.startClock();
+            } else if (this.state === GAME.STATE.FINISHED) {
+                this.gameView.rotateHourglass();
+            }
+        });
+        this.gameEvents.on(GAME.EVENT.FILLED, () => {
+            this.state = GAME.STATE.READY;
+        });
+        this.gameEvents.on(GAME.EVENT.EMPTY, () => {
+            this.state = GAME.STATE.FINISHED;
+        });
     }
 
     private startClock(): void {

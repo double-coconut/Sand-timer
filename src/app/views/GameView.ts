@@ -1,31 +1,46 @@
 //import { IocContext } from "power-di";
 //import { PopupService } from "../services/PopupService";
 import * as GAME from "../configs/Game";
+import * as VISUALS from "../configs/Visuals";
 
 export class GameView extends Phaser.GameObjects.Container {
-    //private popupService = IocContext.DefaultInstance.get(PopupService);
-    //private bkg: Phaser.GameObjects.Sprite;
-    private readonly particlesConfig = {
-        size: 0.01,
-    };
+    private gameEvents: Phaser.Events.EventEmitter;
+    private readonly delayToSettle = 100;
+
+    private activeWidth: number;
+    private activeHeight: number;
+
     private particlesTop: Phaser.Physics.Matter.Image[] = [];
     private particlesBottom: any[] = [];
 
-    private readonly hourglassConfig = {
-        width: 0.3,
-        height: 0.7,
-        wallsThickness: 0.05,
-        cylinderPartHeight: 0.33,
-    };
-    private activeWidth: number;
-    private activeHeight: number;
+    private hourGlass: any;
     private hgWidth: number;
+    private hgHeight: number;
     private hgWallsThickness: number;
 
-    public constructor(public scene) {
+    public constructor(public scene, eventEmitter: Phaser.Events.EventEmitter) {
         super(scene);
+        this.gameEvents = eventEmitter;
         this.init();
-        this.dropParticle();
+    }
+
+    public rotateHourglass(): void {
+        if (this.particlesTop.length === 0) {
+            //this.scene.matter.body.rotate(this.hourGlass, Math.PI);
+            // this.scene.matter.body.applyForce(
+            //     this.hourGlass,
+            //     {
+            //         x: this.activeWidth / 2,
+            //         y: this.activeHeight - this.hgHeight,
+            //     },
+            //     { x: 1.0, y: 0 },
+            // );
+            this.particlesBottom.forEach((particle) =>
+                particle.setPosition(particle.x, particle.y - this.hgHeight * 0.9),
+            );
+            setTimeout(() => this.gameEvents.emit(GAME.EVENT.FILLED), this.delayToSettle);
+            while (this.particlesBottom.length > 0) this.particlesTop.push(this.particlesBottom.pop());
+        }
     }
 
     public dropParticle(): void {
@@ -41,10 +56,17 @@ export class GameView extends Phaser.GameObjects.Container {
             if (lowestParticleIndex >= 0) {
                 const particle = this.particlesTop.splice(lowestParticleIndex, 1);
                 this.particlesBottom.push(particle[0]);
-                particle[0].setPosition(particle[0].x, particle[0].y + 25);
+                particle[0].setPosition(
+                    Phaser.Math.Between(
+                        this.activeWidth / 2 - VISUALS.hourglass.bottomSpawnXJitter,
+                        this.activeWidth / 2 + VISUALS.hourglass.bottomSpawnXJitter,
+                    ),
+                    this.activeHeight / 2 + VISUALS.hourglass.bottomSpawnPoint,
+                );
             }
+            if (this.particlesTop.length === 0) this.gameEvents.emit(GAME.EVENT.EMPTY);
         }
-        console.log(this.particlesTop.length);
+        //console.log(this.particlesTop.length);
     }
 
     private init(): void {
@@ -57,8 +79,10 @@ export class GameView extends Phaser.GameObjects.Container {
     private setEnvironment(): void {
         this.activeWidth = this.scene.scale.gameSize.width;
         this.activeHeight = this.scene.scale.gameSize.height;
-        this.hgWidth = this.activeWidth * this.hourglassConfig.width;
-        this.hgWallsThickness = this.hgWidth * this.hourglassConfig.wallsThickness;
+        this.hgWidth = this.activeWidth * VISUALS.hourglass.width;
+        this.hgHeight = this.activeHeight * VISUALS.hourglass.height;
+        this.hgWallsThickness = this.hgWidth * VISUALS.hourglass.wallsThickness;
+
         this.scene.matter.world.setBounds(0, 0, this.activeWidth, this.activeHeight, 50, true, true, false, true);
     }
 
@@ -71,81 +95,99 @@ export class GameView extends Phaser.GameObjects.Container {
                 lineWidth: 2,
             },
         };
-        const hgHeight = this.activeHeight * this.hourglassConfig.height;
-        const hgCylPartHeight = hgHeight * this.hourglassConfig.cylinderPartHeight;
+        const hgCylPartHeight = this.hgHeight * VISUALS.hourglass.cylinderPartHeight;
 
+        const Top = this.scene.matter.bodies.rectangle(
+            this.activeWidth / 2,
+            (this.activeHeight - this.hgHeight) / 2,
+            this.hgWidth,
+            this.hgWallsThickness,
+            hourglassWallsConfig,
+        );
         const leftTopVert = this.scene.matter.bodies.rectangle(
             (this.activeWidth - this.hgWidth) / 2,
-            (this.activeHeight - hgHeight + hgCylPartHeight) / 2,
+            (this.activeHeight - this.hgHeight + hgCylPartHeight) / 2,
             this.hgWallsThickness,
             hgCylPartHeight,
             hourglassWallsConfig,
         );
         const rightTopVert = this.scene.matter.bodies.rectangle(
             (this.activeWidth + this.hgWidth) / 2,
-            (this.activeHeight - hgHeight + hgCylPartHeight) / 2,
+            (this.activeHeight - this.hgHeight + hgCylPartHeight) / 2,
             this.hgWallsThickness,
             hgCylPartHeight,
             hourglassWallsConfig,
         );
-        const topHor = this.scene.matter.bodies.rectangle(
+        const LRIncline = this.scene.matter.bodies.rectangle(
             this.activeWidth / 2,
             this.activeHeight / 2,
             Math.sqrt(
-                this.hgWidth * this.hgWidth + (hgHeight * (1 - 2 * this.hourglassConfig.cylinderPartHeight)) ** 2,
+                this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.hourglass.cylinderPartHeight)) ** 2,
             ),
             this.hgWallsThickness,
             hourglassWallsConfig,
         );
-        this.scene.matter.body.setAngle(topHor, Math.PI * 0.175);
+        this.scene.matter.body.setAngle(LRIncline, Math.PI * 0.175);
 
         const leftBottomVert = this.scene.matter.bodies.rectangle(
             (this.activeWidth - this.hgWidth) / 2,
-            (this.activeHeight + hgHeight - hgCylPartHeight) / 2,
+            (this.activeHeight + this.hgHeight - hgCylPartHeight) / 2,
             this.hgWallsThickness,
             hgCylPartHeight,
             hourglassWallsConfig,
         );
         const rightBottomVert = this.scene.matter.bodies.rectangle(
             (this.activeWidth + this.hgWidth) / 2,
-            (this.activeHeight + hgHeight - hgCylPartHeight) / 2,
+            (this.activeHeight + this.hgHeight - hgCylPartHeight) / 2,
             this.hgWallsThickness,
             hgCylPartHeight,
             hourglassWallsConfig,
         );
-        const bottomHor = this.scene.matter.bodies.rectangle(
+        const RLIncline = this.scene.matter.bodies.rectangle(
             this.activeWidth / 2,
             this.activeHeight / 2,
             Math.sqrt(
-                this.hgWidth * this.hgWidth + (hgHeight * (1 - 2 * this.hourglassConfig.cylinderPartHeight)) ** 2,
+                this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.hourglass.cylinderPartHeight)) ** 2,
             ),
             this.hgWallsThickness,
             hourglassWallsConfig,
         );
-        this.scene.matter.body.setAngle(bottomHor, -Math.PI * 0.175);
+        this.scene.matter.body.setAngle(RLIncline, -Math.PI * 0.175);
+        const Bottom = this.scene.matter.bodies.rectangle(
+            this.activeWidth / 2,
+            (this.activeHeight + this.hgHeight) / 2,
+            this.hgWidth,
+            this.hgWallsThickness,
+            hourglassWallsConfig,
+        );
 
-        const hourGlass = this.scene.matter.body.create({
-            parts: [leftTopVert, rightTopVert, topHor, leftBottomVert, rightBottomVert, bottomHor],
+        this.hourGlass = this.scene.matter.body.create({
+            parts: [Top, leftTopVert, rightTopVert, LRIncline, leftBottomVert, rightBottomVert, RLIncline, Bottom],
             friction: 1.0,
             frictionAir: 1.0,
         });
         const pieceOfWall = this.scene.matter.add.image(
             (this.activeWidth - this.hgWidth) / 2,
-            (this.activeHeight - hgHeight) / 2,
+            (this.activeHeight - this.hgHeight) / 2,
             "bodies",
             "particleWhite.png",
         );
-        pieceOfWall.setExistingBody(hourGlass).setStatic(true);
+        pieceOfWall.setExistingBody(this.hourGlass).setStatic(true);
+        this.scene.matter.constraint.create({
+            bodyA: this.hourGlass,
+            pointB: { x: this.activeWidth / 2, y: this.activeHeight / 2 },
+            length: 0,
+            stiffness: 0.8,
+        });
         //console.log(hourGlass);
     }
 
     private generateParticles(): void {
-        //const delay = 50;
-        //setTimeout({}, delay);
-        for (let i = 0; i < GAME.PARTICLES_NUM; i++) this.makeParticle();
+        for (let i = 0; i < GAME.PARTICLES_NUM; i++) this.createParticle();
+        setTimeout(() => this.gameEvents.emit(GAME.EVENT.FILLED), this.delayToSettle);
     }
 
-    private makeParticle(): void {
+    private createParticle(): void {
         // const particleImage = new Phaser.GameObjects.Image(this.scene, -100, -100, "bodies", "particleWhite.png");
         // particleImage.setSize(this.activeWidth * this.particles.size, this.activeWidth * this.particles.size);
 
@@ -154,7 +196,10 @@ export class GameView extends Phaser.GameObjects.Container {
                 (this.activeWidth - this.hgWidth) / 2 + this.hgWallsThickness * 2,
                 (this.activeWidth + this.hgWidth) / 2 - this.hgWallsThickness * 2,
             ),
-            Phaser.Math.Between(-300, 0),
+            Phaser.Math.Between(
+                (this.activeHeight - this.hgHeight) / 2 + this.hgWallsThickness * 2,
+                (this.activeHeight - this.hgHeight) / 2 + VISUALS.hourglass.cylinderPartHeight * this.hgHeight,
+            ),
             "bodies",
             "particleWhite.png",
         );
@@ -164,20 +209,4 @@ export class GameView extends Phaser.GameObjects.Container {
         //this.scene.matter.body.scale(ball, this.particlesConfig.size, this.particlesConfig.size);
         this.particlesTop.push(ball);
     }
-
-    // private initBkg(): void {
-    //     const { width, height } = this.scene.scale.gameSize;
-    //     this.bkg = this.scene.add.sprite(width / 2, height / 2, "bkg.jpg");
-    //     this.bkg.setInteractive();
-    //     this.bkg.on(Phaser.Input.Events.POINTER_UP, this.handleBkgClick, this);
-    //     this.add(this.bkg);
-    // }
-
-    // private handleBkgClick(): void {
-    //     this.bkg.disableInteractive();
-    //     this.popupService.showCounterPopup();
-    //     setTimeout(() => {
-    //         this.bkg.setInteractive();
-    //     }, 2000);
-    // }
 }
