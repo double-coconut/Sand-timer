@@ -18,6 +18,10 @@ export default class MainScene extends Phaser.Scene {
         super({ key: SceneNames.Main });
     }
 
+    public update(): void {
+        if (this.state === GAME.STATE.TICKING) this.uiView.updateCounter();
+    }
+
     private init(): void {
         this.gameEvents = new Phaser.Events.EventEmitter();
         //this.initServices();
