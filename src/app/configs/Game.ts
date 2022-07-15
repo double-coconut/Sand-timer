@@ -1,4 +1,4 @@
-export const CLOCK_TIME = 10; // in seconds
+export const CLOCK_TIME = 18; // in seconds
 
 export const PARTICLES_NUM = 250;
 

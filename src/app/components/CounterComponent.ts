@@ -16,33 +16,30 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
         this.updatePosition();
     }
 
-    public updateCounterTween(): void {
-        //if (!this.tweenCounter) {
-        this.tweenCounter = this.scene.tweens.addCounter({
-            from: this.counter,
-            to: this.counter - 1,
-            duration: HUD.COUNTER_LABEL.tweenTime,
-            paused: false,
-            repeat: 0,
-            yoyo: false,
-            ease: "Linear",
-            onComplete: () => {
-                this.counter--;
-                this.label.setText(this.counter.toString());
-            },
-        });
-        //}
-        //if (this.tweenCounter.isPlaying()) this.label.setText(`${Math.floor(this.tweenCounter.getValue()).toString()}`);
+    public updateCounter(): void {
+        if (this.tweenCounter.isPlaying()) this.label.setText(Math.floor(this.tweenCounter.getValue()).toString());
     }
 
-    // public reset(): void {
-    //     this.counter = 0;
-    //     this.label.setText(this.counter.toString());
-    // }
+    public startCounter(): void {
+        this.tweenCounter.resume();
+    }
 
     public setInitialValue(newValue: number): void {
         this.counter = newValue;
         this.label.setText(this.counter.toString());
+        this.tweenCounter = this.scene.tweens.addCounter({
+            from: this.counter,
+            to: 0,
+            duration: (this.counter + 1) * 1000,
+            paused: true,
+            repeat: 0,
+            yoyo: false,
+            ease: "Linear",
+            onComplete: () => {
+                this.counter = 0;
+                this.label.setText(this.counter.toString());
+            },
+        });
     }
 
     public updatePosition(): void {
@@ -60,8 +57,6 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
         this.label.show();
         this.rectBack.setVisible(true);
     }
-
-    //public getValue = (): number => this.counter;
 
     private init(): void {
         this.initBkg();

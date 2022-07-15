@@ -16,7 +16,7 @@ const config = {
             debug: true,
         },
         gravity: {
-            x: 0.7,
+            x: 1.0,
         },
     },
     input: {

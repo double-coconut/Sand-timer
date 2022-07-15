@@ -66,7 +66,6 @@ export class GameView extends Phaser.GameObjects.Container {
             }
             if (this.particlesTop.length === 0) this.gameEvents.emit(GAME.EVENT.EMPTY);
         }
-        //console.log(this.particlesTop.length);
     }
 
     private init(): void {
@@ -97,13 +96,30 @@ export class GameView extends Phaser.GameObjects.Container {
         };
         const hgCylPartHeight = this.hgHeight * VISUALS.hourglass.cylinderPartHeight;
 
-        const Top = this.scene.matter.bodies.rectangle(
+        const topLid = this.scene.matter.bodies.rectangle(
             this.activeWidth / 2,
             (this.activeHeight - this.hgHeight) / 2,
             this.hgWidth,
             this.hgWallsThickness,
             hourglassWallsConfig,
         );
+        // const topVertices =
+        //     "((this.activeWidth - this.hgWidth) / 2) " +
+        //     "(this.activeHeight - this.hgHeight - this.hgWallsThickness) / 2 " +
+        //     "((this.activeWidth + this.hgWidth) / 2) " +
+        //     "(this.activeHeight - this.hgHeight - this.hgWallsThickness) / 2 " +
+        //     "((this.activeWidth + this.hgWidth) / 2) " +
+        //     "(this.activeHeight - this.hgHeight + this.hgWallsThickness) / 2 " +
+        //     "((this.activeWidth - this.hgWidth) / 2) " +
+        //     "(this.activeHeight - this.hgHeight + this.hgWallsThickness) / 2 ";
+        // const Top = this.scene.add.polygon(
+        //     this.activeWidth / 2,
+        //     (this.activeHeight - this.hgHeight) / 2,
+        //     topVertices,
+        //     0x0000ff,
+        //     0.2,
+        // );
+        // this.scene.matter.add.gameObject(Top, { shape: { type: "fromVerts", verts: topVertices, flagInternal: true } });
         const leftTopVert = this.scene.matter.bodies.rectangle(
             (this.activeWidth - this.hgWidth) / 2,
             (this.activeHeight - this.hgHeight + hgCylPartHeight) / 2,
@@ -153,7 +169,7 @@ export class GameView extends Phaser.GameObjects.Container {
             hourglassWallsConfig,
         );
         this.scene.matter.body.setAngle(RLIncline, -Math.PI * 0.175);
-        const Bottom = this.scene.matter.bodies.rectangle(
+        const bottomLid = this.scene.matter.bodies.rectangle(
             this.activeWidth / 2,
             (this.activeHeight + this.hgHeight) / 2,
             this.hgWidth,
@@ -162,7 +178,16 @@ export class GameView extends Phaser.GameObjects.Container {
         );
 
         this.hourGlass = this.scene.matter.body.create({
-            parts: [Top, leftTopVert, rightTopVert, LRIncline, leftBottomVert, rightBottomVert, RLIncline, Bottom],
+            parts: [
+                topLid,
+                leftTopVert,
+                rightTopVert,
+                LRIncline,
+                leftBottomVert,
+                rightBottomVert,
+                RLIncline,
+                bottomLid,
+            ],
             friction: 1.0,
             frictionAir: 1.0,
         });

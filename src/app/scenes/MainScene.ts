@@ -49,9 +49,11 @@ export default class MainScene extends Phaser.Scene {
         this.gameEvents.on(GAME.EVENT.CLICK, () => {
             if (this.state === GAME.STATE.READY) {
                 this.state = GAME.STATE.TICKING;
+                this.uiView.startCounter();
                 this.startClock();
             } else if (this.state === GAME.STATE.FINISHED) {
                 this.gameView.rotateHourglass();
+                this.uiView.setCounter();
             }
         });
         this.gameEvents.on(GAME.EVENT.FILLED, () => {
