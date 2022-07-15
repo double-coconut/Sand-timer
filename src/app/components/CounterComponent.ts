@@ -1,33 +1,38 @@
 import * as HUD from "../configs/Hud";
+import { EVENT } from "../configs/Game";
 import LabelComponent from "./LabelComponent";
 
 export default class CounterComponent extends Phaser.GameObjects.Container {
+    private gameEvents: Phaser.Events.EventEmitter;
     private rectBack: Phaser.GameObjects.Rectangle;
     private label: LabelComponent;
     private counter = 0; // seconds
     private posX = this.scene.scale.gameSize.width / 2 + HUD.COUNTER_LABEL.x;
     private posY = HUD.COUNTER_LABEL.y;
     //private readonly counterText = "";
-    private tweenCounter: Phaser.Tweens.Tween;
+    private tweenCountDown: Phaser.Tweens.Tween;
+    private tweenCounterBlink: Phaser.Tweens.Tween;
+    private tweenCounterBlinkInterval: NodeJS.Timer;
 
-    public constructor(scene) {
+    public constructor(scene, eventEmitter: Phaser.Events.EventEmitter) {
         super(scene);
+        this.gameEvents = eventEmitter;
         this.init();
         this.updatePosition();
     }
 
     public updateCounter(): void {
-        if (this.tweenCounter.isPlaying()) this.label.setText(Math.floor(this.tweenCounter.getValue()).toString());
+        if (this.tweenCountDown.isPlaying()) this.label.setText(Math.floor(this.tweenCountDown.getValue()).toString());
     }
 
     public startCounter(): void {
-        this.tweenCounter.resume();
+        this.tweenCountDown.resume();
     }
 
     public setInitialValue(newValue: number): void {
         this.counter = newValue;
         this.label.setText(this.counter.toString());
-        this.tweenCounter = this.scene.tweens.addCounter({
+        this.tweenCountDown = this.scene.tweens.addCounter({
             from: this.counter,
             to: 0,
             duration: (this.counter + 1) * 1000,
@@ -63,6 +68,62 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
         this.initLabel();
     }
 
+    private blinkCounter(): void {
+        //if (!this.tweenCounterBlink.isPlaying()) this.tweenCounterBlink.resume();
+        if (!this.tweenCountDown.isPlaying()) {
+            this.tweenCounterBlink.resume();
+            this.tweenCounterBlinkInterval = setInterval(() => {
+                this.tweenCounterBlink.resume();
+            }, HUD.COUNTER_LABEL.blinkPause);
+        }
+    }
+
+    private stopBlinkCounter(): void {
+        clearInterval(this.tweenCounterBlinkInterval);
+        this.tweenCounterBlink.pause();
+        this.label.setAlpha(1.0);
+    }
+
+    private inputCounter(): void {
+        if (!this.tweenCountDown.isPlaying()) {
+            this.stopBlinkCounter();
+            this.label.setText("");
+            this.scene.input.keyboard.on("keydown", (event) => {
+                if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.BACKSPACE && this.label.text.length > 0) {
+                    this.label.text = this.label.text.substr(0, this.label.text.length - 1);
+                } else if (
+                    (event.keyCode === Phaser.Input.Keyboard.KeyCodes.ONE ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_ONE ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.TWO ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_TWO ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.THREE ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_THREE ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.FOUR ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_FOUR ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.FIVE ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_FIVE ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.SIX ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_SIX ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.SEVEN ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_SEVEN ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.EIGHT ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_EIGHT ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NINE ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_NINE ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.ZERO ||
+                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_ZERO) &&
+                    this.label.text.length <= HUD.COUNTER_LABEL.maxSymbols
+                ) {
+                    this.label.text += event.key;
+                } else if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.ENTER) {
+                    this.counter = parseInt(this.label.text);
+                    this.setInitialValue(this.counter);
+                    this.gameEvents.emit(EVENT.SETTIMER, this.counter);
+                }
+            });
+        }
+    }
+
     private initBkg(): void {
         this.rectBack = this.scene.add.rectangle(
             this.posX, // - HUD.SCORE_BACK_SIZE_X / 2,
@@ -74,11 +135,28 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
         );
         this.rectBack.setStrokeStyle(HUD.COUNTER_BACK.wStroke, HUD.COUNTER_BACK.cStroke, HUD.COUNTER_BACK.aStroke);
         this.rectBack.setOrigin(0.5, 0.5);
+        this.rectBack
+            .setInteractive(
+                new Phaser.Geom.Rectangle(0, 0, HUD.COUNTER_BACK.sizeX, HUD.COUNTER_BACK.sizeY),
+                Phaser.Geom.Rectangle.Contains,
+            )
+            .on("pointerover", () => this.blinkCounter())
+            .on("pointerout", () => this.stopBlinkCounter())
+            .on("pointerdown", () => this.inputCounter());
         this.add(this.rectBack);
     }
 
     private initLabel(): void {
         this.label = new LabelComponent(this.scene, this.posX, this.posY, this.counter.toString(), HUD.COUNTER_LABEL);
         this.add(this.label);
+        this.tweenCounterBlink = this.scene.tweens.add({
+            targets: this.label,
+            alpha: 0.3,
+            duration: HUD.COUNTER_LABEL.blinkDuration,
+            paused: true,
+            repeat: 0,
+            yoyo: true,
+            ease: "Linear",
+        });
     }
 }

@@ -1,17 +1,19 @@
 export const COUNTER_LABEL = {
     x: 0, // shift from center
-    y: 50, // shift from top
+    y: 40, // shift from top
     font: "28px Georgia",
     color: "#ffffff",
-    tweenTime: 200, // ms
+    blinkDuration: 400, // ms
+    blinkPause: 1200,
+    maxSymbols: 5,
 };
 
 export const COUNTER_BACK = {
     sizeX: 130,
-    sizeY: 40,
-    cFill: 0x030303,
-    aFill: 1.0,
-    wStroke: 0,
-    cStroke: 0x000000,
-    aStroke: 0.0,
+    sizeY: 38,
+    cFill: 0x005500,
+    aFill: 0.0,
+    wStroke: 2,
+    cStroke: 0x00aa00,
+    aStroke: 1.0,
 };

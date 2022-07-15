@@ -13,6 +13,7 @@ export default class MainScene extends Phaser.Scene {
 
     private gameEvents: Phaser.Events.EventEmitter;
     private state = GAME.STATE.FILLING;
+    private clockTimer: number = GAME.CLOCK_TIME;
 
     public constructor() {
         super({ key: SceneNames.Main });
@@ -43,17 +44,18 @@ export default class MainScene extends Phaser.Scene {
     private initUIView(): void {
         this.uiView = new UIView(this, this.gameEvents);
         this.add.existing(this.uiView);
+        this.uiView.setCounter(this.clockTimer);
     }
 
     private handleEvents(): void {
-        this.gameEvents.on(GAME.EVENT.CLICK, () => {
+        this.gameEvents.on(GAME.EVENT.CLOCKCLICK, () => {
             if (this.state === GAME.STATE.READY) {
                 this.state = GAME.STATE.TICKING;
                 this.uiView.startCounter();
                 this.startClock();
             } else if (this.state === GAME.STATE.FINISHED) {
                 this.gameView.rotateHourglass();
-                this.uiView.setCounter();
+                this.uiView.setCounter(this.clockTimer);
             }
         });
         this.gameEvents.on(GAME.EVENT.FILLED, () => {
@@ -62,14 +64,17 @@ export default class MainScene extends Phaser.Scene {
         this.gameEvents.on(GAME.EVENT.EMPTY, () => {
             this.state = GAME.STATE.FINISHED;
         });
+        this.gameEvents.on(GAME.EVENT.SETTIMER, (value) => {
+            this.clockTimer = value;
+        });
     }
 
     private startClock(): void {
-        const dropDelay = (GAME.CLOCK_TIME * 1000) / GAME.PARTICLES_NUM;
+        const dropDelay = (this.clockTimer * 1000) / GAME.PARTICLES_NUM;
         const startTime = Date.now();
         const timer = setInterval(() => {
             this.gameView.dropParticle();
-            if (Date.now() > startTime + GAME.CLOCK_TIME * 1000) clearInterval(timer);
+            if (Date.now() > startTime + this.clockTimer * 1000) clearInterval(timer);
         }, dropDelay);
     }
 

@@ -204,7 +204,22 @@ export class GameView extends Phaser.GameObjects.Container {
             length: 0,
             stiffness: 0.8,
         });
-        //console.log(hourGlass);
+        const hgClickArea = this.scene.add.rectangle(
+            this.activeWidth / 2,
+            this.activeHeight / 2,
+            this.hgWidth, // + 2 * VISUALS.hourglass.wallsThickness * this.activeWidth,
+            this.hgHeight, // + 2 * VISUALS.hourglass.wallsThickness * this.activeWidth,
+            0x000000,
+            0.0,
+        );
+        hgClickArea
+            .setInteractive(
+                new Phaser.Geom.Rectangle(0, 0, this.hgWidth, this.hgHeight),
+                Phaser.Geom.Rectangle.Contains,
+            )
+            //.on("pointerover", () => change color?)
+            //.on("pointerout", () => change color back)
+            .on("pointerdown", () => this.gameEvents.emit(GAME.EVENT.CLOCKCLICK));
     }
 
     private generateParticles(): void {

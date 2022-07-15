@@ -10,7 +10,8 @@ export enum STATE {
 }
 
 export enum EVENT {
-    CLICK = "eventClick",
+    CLOCKCLICK = "eventClickOnClock",
     FILLED = "eventClockFilled",
     EMPTY = "eventClockEmpty",
+    SETTIMER = "eventSetTimer",
 }

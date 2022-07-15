@@ -1,5 +1,4 @@
 import CounterComponent from "../components/CounterComponent";
-import * as GAME from "../configs/Game";
 //import * as HUD from "../configs/Hud";
 
 export class UIView extends Phaser.GameObjects.Container {
@@ -12,8 +11,8 @@ export class UIView extends Phaser.GameObjects.Container {
         this.init();
     }
 
-    public setCounter(): void {
-        this.counter.setInitialValue(GAME.CLOCK_TIME);
+    public setCounter(value: number): void {
+        this.counter.setInitialValue(value);
     }
 
     public updateCounter(): void {
@@ -26,19 +25,18 @@ export class UIView extends Phaser.GameObjects.Container {
 
     private init(): void {
         this.initCounter();
-        this.handleClicks();
+        //this.handleClicks();
     }
 
     private initCounter(): void {
-        this.counter = new CounterComponent(this.scene);
+        this.counter = new CounterComponent(this.scene, this.gameEvents);
         this.add(this.counter);
-        this.setCounter();
     }
 
     // handles Clicks and Touches
-    private handleClicks(): void {
-        this.scene.input.on("pointerup", (pointer) => {
-            if (pointer.leftButtonReleased()) this.gameEvents.emit(GAME.EVENT.CLICK);
-        });
-    }
+    // private handleClicks(): void {
+    //     this.scene.input.on("pointerup", (pointer) => {
+    //         if (pointer.leftButtonReleased()) this.gameEvents.emit(GAME.EVENT.CLICK);
+    //     });
+    // }
 }
