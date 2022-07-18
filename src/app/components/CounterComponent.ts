@@ -92,26 +92,7 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
                 if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.BACKSPACE && this.label.text.length > 0) {
                     this.label.text = this.label.text.substr(0, this.label.text.length - 1);
                 } else if (
-                    (event.keyCode === Phaser.Input.Keyboard.KeyCodes.ONE ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_ONE ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.TWO ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_TWO ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.THREE ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_THREE ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.FOUR ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_FOUR ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.FIVE ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_FIVE ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.SIX ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_SIX ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.SEVEN ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_SEVEN ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.EIGHT ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_EIGHT ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NINE ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_NINE ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.ZERO ||
-                        event.keyCode === Phaser.Input.Keyboard.KeyCodes.NUMPAD_ZERO) &&
+                    HUD.COUNTER_INPUT_KEYS.includes(event.keyCode) &&
                     this.label.text.length <= HUD.COUNTER_LABEL.maxSymbols
                 ) {
                     this.label.text += event.key;
