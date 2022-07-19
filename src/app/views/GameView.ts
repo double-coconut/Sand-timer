@@ -58,10 +58,10 @@ export class GameView extends Phaser.GameObjects.Container {
                 this.particlesBottom.push(particle[0]);
                 particle[0].setPosition(
                     Phaser.Math.Between(
-                        this.activeWidth / 2 - VISUALS.hourglass.bottomSpawnXJitter,
-                        this.activeWidth / 2 + VISUALS.hourglass.bottomSpawnXJitter,
+                        this.activeWidth / 2 - VISUALS.HOURGLASS.bottomSpawnXJitter,
+                        this.activeWidth / 2 + VISUALS.HOURGLASS.bottomSpawnXJitter,
                     ),
-                    this.activeHeight / 2 + VISUALS.hourglass.bottomSpawnPoint,
+                    this.activeHeight / 2 + VISUALS.HOURGLASS.bottomSpawnPoint,
                 );
             }
             if (this.particlesTop.length === 0) this.gameEvents.emit(GAME.EVENT.EMPTY);
@@ -78,9 +78,9 @@ export class GameView extends Phaser.GameObjects.Container {
     private setEnvironment(): void {
         this.activeWidth = this.scene.scale.gameSize.width;
         this.activeHeight = this.scene.scale.gameSize.height;
-        this.hgWidth = this.activeWidth * VISUALS.hourglass.width;
-        this.hgHeight = this.activeHeight * VISUALS.hourglass.height;
-        this.hgWallsThickness = this.hgWidth * VISUALS.hourglass.wallsThickness;
+        this.hgWidth = this.activeWidth * VISUALS.HOURGLASS.width;
+        this.hgHeight = this.activeHeight * VISUALS.HOURGLASS.height;
+        this.hgWallsThickness = this.hgWidth * VISUALS.HOURGLASS.wallsThickness;
 
         this.scene.matter.world.setBounds(0, 0, this.activeWidth, this.activeHeight, 50, true, true, false, true);
     }
@@ -88,13 +88,13 @@ export class GameView extends Phaser.GameObjects.Container {
     private makeHourglass(): void {
         const hourglassWallsConfig = {
             isStatic: true,
-            render: {
-                fillStyle: "white",
-                strokeStyle: "black",
-                lineWidth: 2,
-            },
+            // render: {
+            //     fillStyle: "white",
+            //     strokeStyle: "black",
+            //     lineWidth: 2,
+            // },
         };
-        const hgCylPartHeight = this.hgHeight * VISUALS.hourglass.cylinderPartHeight;
+        const hgCylPartHeight = this.hgHeight * VISUALS.HOURGLASS.cylinderPartHeight;
 
         const topLid = this.scene.matter.bodies.rectangle(
             this.activeWidth / 2,
@@ -138,12 +138,11 @@ export class GameView extends Phaser.GameObjects.Container {
             this.activeWidth / 2,
             this.activeHeight / 2,
             Math.sqrt(
-                this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.hourglass.cylinderPartHeight)) ** 2,
+                this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.HOURGLASS.cylinderPartHeight)) ** 2,
             ),
             this.hgWallsThickness,
-            hourglassWallsConfig,
+            { isStatic: true, angle: Math.PI * 0.175 },
         );
-        this.scene.matter.body.setAngle(LRIncline, Math.PI * 0.175);
 
         const leftBottomVert = this.scene.matter.bodies.rectangle(
             (this.activeWidth - this.hgWidth) / 2,
@@ -163,12 +162,11 @@ export class GameView extends Phaser.GameObjects.Container {
             this.activeWidth / 2,
             this.activeHeight / 2,
             Math.sqrt(
-                this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.hourglass.cylinderPartHeight)) ** 2,
+                this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.HOURGLASS.cylinderPartHeight)) ** 2,
             ),
             this.hgWallsThickness,
-            hourglassWallsConfig,
+            { isStatic: true, angle: -Math.PI * 0.175 },
         );
-        this.scene.matter.body.setAngle(RLIncline, -Math.PI * 0.175);
         const bottomLid = this.scene.matter.bodies.rectangle(
             this.activeWidth / 2,
             (this.activeHeight + this.hgHeight) / 2,
@@ -176,6 +174,34 @@ export class GameView extends Phaser.GameObjects.Container {
             this.hgWallsThickness,
             hourglassWallsConfig,
         );
+
+        if (VISUALS.PINWHEEL.on) {
+            const pinwheel = this.scene.matter.bodies.rectangle(
+                this.activeWidth / 2,
+                (this.activeHeight - this.hgHeight) / 2 +
+                    VISUALS.HOURGLASS.cylinderPartHeight * VISUALS.PINWHEEL.depth * this.hgHeight,
+                this.hgWidth * VISUALS.PINWHEEL.size,
+                this.hgWallsThickness * VISUALS.PINWHEEL.width,
+                { friction: 0, restitution: 1, mass: 0.05 }, //, angle: (90 * Math.PI) / 180
+            );
+            const pieceOfPinwheel = this.scene.matter.add.image(
+                this.activeWidth / 2,
+                (this.activeHeight - this.hgHeight) / 2 +
+                    VISUALS.HOURGLASS.cylinderPartHeight * VISUALS.PINWHEEL.depth * this.hgHeight,
+                "bodies",
+                "particleWhite.png",
+            );
+            pieceOfPinwheel.setExistingBody(pinwheel);
+
+            this.scene.matter.add.worldConstraint(pinwheel, 0, 0.9, {
+                pointA: {
+                    x: this.activeWidth / 2,
+                    y:
+                        (this.activeHeight - this.hgHeight) / 2 +
+                        VISUALS.HOURGLASS.cylinderPartHeight * VISUALS.PINWHEEL.depth * this.hgHeight,
+                },
+            });
+        }
 
         this.hourGlass = this.scene.matter.body.create({
             parts: [
@@ -197,12 +223,9 @@ export class GameView extends Phaser.GameObjects.Container {
             "bodies",
             "particleWhite.png",
         );
-        pieceOfWall.setExistingBody(this.hourGlass).setStatic(true);
-        this.scene.matter.constraint.create({
-            bodyA: this.hourGlass,
-            pointB: { x: this.activeWidth / 2, y: this.activeHeight / 2 },
-            length: 0,
-            stiffness: 0.8,
+        pieceOfWall.setExistingBody(this.hourGlass);
+        this.scene.matter.add.worldConstraint(this.hourGlass, 0, 0.9, {
+            pointA: { x: this.activeWidth / 2, y: this.activeHeight / 2 },
         });
         const hgClickArea = this.scene.add.rectangle(
             this.activeWidth / 2,
@@ -238,7 +261,7 @@ export class GameView extends Phaser.GameObjects.Container {
             ),
             Phaser.Math.Between(
                 (this.activeHeight - this.hgHeight) / 2 + this.hgWallsThickness * 2,
-                (this.activeHeight - this.hgHeight) / 2 + VISUALS.hourglass.cylinderPartHeight * this.hgHeight,
+                (this.activeHeight - this.hgHeight) / 2 + VISUALS.HOURGLASS.cylinderPartHeight * this.hgHeight,
             ),
             "bodies",
             "particleWhite.png",

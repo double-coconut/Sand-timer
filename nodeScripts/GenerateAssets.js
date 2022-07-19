@@ -146,6 +146,9 @@ async function generateAtlases() {
         const folders = await fs.readdir(path, "utf8");
         const spriteSheetNames = [];
         for (const folder of folders) {
+            const folderPath = join(path, folder);
+            const stat = await fs.stat(folderPath);
+            if (!stat.isDirectory()) continue;
             const folderContent = await getFolderContent(join(path, folder), true, folder);
             if (folderContent.length === 0) continue;
             const imageFiles = folderContent.filter((f) => isImage(f));
