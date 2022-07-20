@@ -18,6 +18,22 @@ export const COUNTER_BACK = {
     aStroke: 1.0,
 };
 
+export const MESSAGE = {
+    font: "28px Georgia",
+    color: "#ffffff",
+    cFill: 0x000077,
+    aFill: 1.0,
+    backHeight: 40,
+};
+
+// X sign to remove message
+export const MESSAGE_X = {
+    font: "28px Georgia",
+    color: "#777777",
+    highlightColor: "#ffffff",
+    xShift: -MESSAGE.backHeight / 2,
+};
+
 export const COUNTER_INPUT_KEYS = [
     Phaser.Input.Keyboard.KeyCodes.ONE,
     Phaser.Input.Keyboard.KeyCodes.NUMPAD_ONE,

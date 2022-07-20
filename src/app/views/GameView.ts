@@ -10,7 +10,7 @@ export class GameView extends Phaser.GameObjects.Container {
     private activeWidth: number;
     private activeHeight: number;
 
-    private particlesTop: Phaser.Physics.Matter.Image[] = [];
+    private particlesTop: any[] = [];
     private particlesBottom: any[] = [];
 
     private hourGlass: any;
@@ -48,20 +48,30 @@ export class GameView extends Phaser.GameObjects.Container {
             let lowestParticleIndex = -1;
             let lowestParticleY = 0;
             this.particlesTop.forEach((particle, index) => {
-                if (particle.y > lowestParticleY) {
-                    lowestParticleY = particle.y;
+                if (particle.position.y > lowestParticleY) {
+                    lowestParticleY = particle.position.y;
                     lowestParticleIndex = index;
                 }
             });
             if (lowestParticleIndex >= 0) {
                 const particle = this.particlesTop.splice(lowestParticleIndex, 1);
                 this.particlesBottom.push(particle[0]);
-                particle[0].setPosition(
+                // if the particles are images/tiles
+                // particle[0].setPosition(
+                //     Phaser.Math.Between(
+                //         this.activeWidth / 2 - VISUALS.HOURGLASS.bottomSpawnXJitter,
+                //         this.activeWidth / 2 + VISUALS.HOURGLASS.bottomSpawnXJitter,
+                //     ),
+                //     this.activeHeight / 2 + VISUALS.HOURGLASS.bottomSpawnPoint,
+                // );
+                this.scene.matter.alignBody(
+                    particle[0],
                     Phaser.Math.Between(
                         this.activeWidth / 2 - VISUALS.HOURGLASS.bottomSpawnXJitter,
                         this.activeWidth / 2 + VISUALS.HOURGLASS.bottomSpawnXJitter,
                     ),
                     this.activeHeight / 2 + VISUALS.HOURGLASS.bottomSpawnPoint,
+                    Phaser.Display.Align.BOTTOM_CENTER,
                 );
             }
             if (this.particlesTop.length === 0) this.gameEvents.emit(GAME.EVENT.EMPTY);
@@ -103,23 +113,6 @@ export class GameView extends Phaser.GameObjects.Container {
             this.hgWallsThickness,
             hourglassWallsConfig,
         );
-        // const topVertices =
-        //     "((this.activeWidth - this.hgWidth) / 2) " +
-        //     "(this.activeHeight - this.hgHeight - this.hgWallsThickness) / 2 " +
-        //     "((this.activeWidth + this.hgWidth) / 2) " +
-        //     "(this.activeHeight - this.hgHeight - this.hgWallsThickness) / 2 " +
-        //     "((this.activeWidth + this.hgWidth) / 2) " +
-        //     "(this.activeHeight - this.hgHeight + this.hgWallsThickness) / 2 " +
-        //     "((this.activeWidth - this.hgWidth) / 2) " +
-        //     "(this.activeHeight - this.hgHeight + this.hgWallsThickness) / 2 ";
-        // const Top = this.scene.add.polygon(
-        //     this.activeWidth / 2,
-        //     (this.activeHeight - this.hgHeight) / 2,
-        //     topVertices,
-        //     0x0000ff,
-        //     0.2,
-        // );
-        // this.scene.matter.add.gameObject(Top, { shape: { type: "fromVerts", verts: topVertices, flagInternal: true } });
         const leftTopVert = this.scene.matter.bodies.rectangle(
             (this.activeWidth - this.hgWidth) / 2,
             (this.activeHeight - this.hgHeight + hgCylPartHeight) / 2,
@@ -254,7 +247,19 @@ export class GameView extends Phaser.GameObjects.Container {
         // const particleImage = new Phaser.GameObjects.Image(this.scene, -100, -100, "bodies", "particleWhite.png");
         // particleImage.setSize(this.activeWidth * this.particles.size, this.activeWidth * this.particles.size);
 
-        const ball = this.scene.matter.add.image(
+        // const ball = this.scene.matter.add.image(
+        //     Phaser.Math.Between(
+        //         (this.activeWidth - this.hgWidth) / 2 + this.hgWallsThickness * 2,
+        //         (this.activeWidth + this.hgWidth) / 2 - this.hgWallsThickness * 2,
+        //     ),
+        //     Phaser.Math.Between(
+        //         (this.activeHeight - this.hgHeight) / 2 + this.hgWallsThickness * 2,
+        //         (this.activeHeight - this.hgHeight) / 2 + VISUALS.HOURGLASS.cylinderPartHeight * this.hgHeight,
+        //     ),
+        //     "bodies",
+        //     "particleWhite.png",
+        // );
+        const ball = this.scene.matter.add.circle(
             Phaser.Math.Between(
                 (this.activeWidth - this.hgWidth) / 2 + this.hgWallsThickness * 2,
                 (this.activeWidth + this.hgWidth) / 2 - this.hgWallsThickness * 2,
@@ -263,12 +268,9 @@ export class GameView extends Phaser.GameObjects.Container {
                 (this.activeHeight - this.hgHeight) / 2 + this.hgWallsThickness * 2,
                 (this.activeHeight - this.hgHeight) / 2 + VISUALS.HOURGLASS.cylinderPartHeight * this.hgHeight,
             ),
-            "bodies",
-            "particleWhite.png",
+            3,
+            { restitution: 0, friction: 0.3 },
         );
-        ball.setCircle();
-        ball.setFriction(1.0).setFrictionAir(0.05);
-        ball.setBounce(0.01);
         //this.scene.matter.body.scale(ball, this.particlesConfig.size, this.particlesConfig.size);
         this.particlesTop.push(ball);
     }
