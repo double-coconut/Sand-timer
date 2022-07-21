@@ -1,9 +1,12 @@
 import CounterComponent from "../components/CounterComponent";
-//import * as HUD from "../configs/Hud";
+import MessageComponent from "../components/MessageComponent";
+import * as HUD from "../configs/Hud";
 
 export class UIView extends Phaser.GameObjects.Container {
     private counter: CounterComponent;
-    private gameEvents: Phaser.Events.EventEmitter;
+    private readonly gameEvents: Phaser.Events.EventEmitter;
+    private messageStart: MessageComponent;
+    private messageEditCounter: MessageComponent;
 
     public constructor(public scene, eventEmitter: Phaser.Events.EventEmitter) {
         super(scene);
@@ -26,6 +29,13 @@ export class UIView extends Phaser.GameObjects.Container {
     private init(): void {
         this.initCounter();
         //this.handleClicks();
+        //this.initMessages();
+        //this.messageStart.show();
+    }
+
+    private initMessages(): void {
+        this.messageStart = new MessageComponent(this.scene, HUD.MESSAGE_TEXT_START);
+        this.messageEditCounter = new MessageComponent(this.scene, HUD.MESSAGE_TEXT_EDIT_COUNTER);
     }
 
     private initCounter(): void {

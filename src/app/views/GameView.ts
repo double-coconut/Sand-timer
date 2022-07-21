@@ -275,7 +275,7 @@ export class GameView extends Phaser.GameObjects.Container {
                 (this.activeHeight - this.hgHeight) / 2 + VISUALS.HOURGLASS.cylinderPartHeight * this.hgHeight,
             ),
             3.5,
-            { restitution: 0.9, friction: 0.3 },
+            { restitution: 0.95, friction: 0.3 },
         );
         //this.scene.matter.body.scale(ball, this.particlesConfig.size, this.particlesConfig.size);
         this.particlesTop.push(ball);

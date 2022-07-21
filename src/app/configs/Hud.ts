@@ -19,7 +19,7 @@ export const COUNTER_BACK = {
 };
 
 export const MESSAGE = {
-    font: "28px Georgia",
+    font: "24px Georgia",
     color: "#ffffff",
     cFill: 0x000077,
     aFill: 1.0,
@@ -56,3 +56,9 @@ export const COUNTER_INPUT_KEYS = [
     Phaser.Input.Keyboard.KeyCodes.ZERO,
     Phaser.Input.Keyboard.KeyCodes.NUMPAD_ZERO,
 ];
+
+export const MESSAGE_TEXT_START =
+    "Click/tap hourglass to start.\nClick again after finish to reset.\nClick counter to set time.";
+
+export const MESSAGE_TEXT_EDIT_COUNTER =
+    "Use keyboard number keys to set time period in seconds.\nBackspace to delete, Enter to set.";

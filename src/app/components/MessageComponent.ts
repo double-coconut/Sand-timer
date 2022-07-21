@@ -15,11 +15,11 @@ export default class MessageComponent extends Phaser.GameObjects.Container {
 
     public updatePosition(): void {
         if (!this.destroyed) {
-            const x = this.scene.scale.gameSize.width / 2;
-            const y = this.scene.scale.gameSize.height - HUD.MESSAGE.backHeight / 2;
+            const x = this.scene.scale.displaySize.width / 2;
+            const y = this.scene.scale.displaySize.height - HUD.MESSAGE.backHeight / 2;
             this.back.setPosition(x, y);
             this.label.setPosition(x, y);
-            this.xLabel.setPosition(this.scene.scale.gameSize.width + HUD.MESSAGE_X.xShift, y);
+            this.xLabel.setPosition(this.scene.scale.displaySize.width + HUD.MESSAGE_X.xShift, y);
         }
     }
 
@@ -47,6 +47,7 @@ export default class MessageComponent extends Phaser.GameObjects.Container {
                 .on("pointerout", () => this.grayoutX())
                 .on("pointerdown", () => this.close());
         }
+        console.log(this.back, this.label);
     }
 
     private lightX(): void {
@@ -80,9 +81,9 @@ export default class MessageComponent extends Phaser.GameObjects.Container {
         this.add(this.xLabel);
     }
 
-    private initLabel(text): void {
+    private initLabel(text: string): void {
         this.label = new LabelComponent(this.scene, 0, 0, text, HUD.MESSAGE);
-        this.label.hide();
+        //this.label.hide();
         this.add(this.label);
     }
 }
