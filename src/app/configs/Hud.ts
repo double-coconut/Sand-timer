@@ -1,7 +1,7 @@
 export const COUNTER_LABEL = {
     x: 0, // shift from center
-    y: 40, // shift from top
-    font: "28px Georgia",
+    y: 70, // shift from top
+    font: "30px Georgia",
     color: "#ffffff",
     blinkDuration: 400, // ms
     blinkPause: 1200,
@@ -10,7 +10,7 @@ export const COUNTER_LABEL = {
 
 export const COUNTER_BACK = {
     sizeX: 130,
-    sizeY: 38,
+    sizeY: 42,
     cFill: 0x005500,
     aFill: 0.0,
     wStroke: 2,

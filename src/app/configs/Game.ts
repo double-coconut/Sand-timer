@@ -1,6 +1,6 @@
-export const CLOCK_TIME = 18; // in seconds
+export const CLOCK_TIME = 12; // in seconds
 
-export const PARTICLES_NUM = 400;
+export const PARTICLES_NUM = 350;
 
 export enum STATE {
     FILLING, // particles are being dropped

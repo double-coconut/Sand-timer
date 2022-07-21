@@ -9,7 +9,7 @@ const config = {
     antialiasGL: false,
     type: Phaser.WEBGL,
     width: 800,
-    height: 600,
+    height: 1200,
     physics: {
         default: "matter",
         matter: {

@@ -36,7 +36,13 @@ export class GameView extends Phaser.GameObjects.Container {
             //     { x: 1.0, y: 0 },
             // );
             this.particlesBottom.forEach((particle) =>
-                particle.setPosition(particle.x, particle.y - this.hgHeight * 0.9),
+                //particle.setPosition(particle.x, particle.y - this.hgHeight * 0.9),
+                this.scene.matter.alignBody(
+                    particle,
+                    particle.position.x,
+                    particle.position.y - this.hgHeight * 0.8,
+                    Phaser.Display.Align.BOTTOM_CENTER,
+                ),
             );
             setTimeout(() => this.gameEvents.emit(GAME.EVENT.FILLED), this.delayToSettle);
             while (this.particlesBottom.length > 0) this.particlesTop.push(this.particlesBottom.pop());
@@ -54,8 +60,8 @@ export class GameView extends Phaser.GameObjects.Container {
                 }
             });
             if (lowestParticleIndex >= 0) {
-                const particle = this.particlesTop.splice(lowestParticleIndex, 1);
-                this.particlesBottom.push(particle[0]);
+                const particle = this.particlesTop.splice(lowestParticleIndex, 1)[0];
+                this.particlesBottom.push(particle);
                 // if the particles are images/tiles
                 // particle[0].setPosition(
                 //     Phaser.Math.Between(
@@ -65,7 +71,7 @@ export class GameView extends Phaser.GameObjects.Container {
                 //     this.activeHeight / 2 + VISUALS.HOURGLASS.bottomSpawnPoint,
                 // );
                 this.scene.matter.alignBody(
-                    particle[0],
+                    particle,
                     Phaser.Math.Between(
                         this.activeWidth / 2 - VISUALS.HOURGLASS.bottomSpawnXJitter,
                         this.activeWidth / 2 + VISUALS.HOURGLASS.bottomSpawnXJitter,
@@ -92,7 +98,7 @@ export class GameView extends Phaser.GameObjects.Container {
         this.hgHeight = this.activeHeight * VISUALS.HOURGLASS.height;
         this.hgWallsThickness = this.hgWidth * VISUALS.HOURGLASS.wallsThickness;
 
-        this.scene.matter.world.setBounds(0, 0, this.activeWidth, this.activeHeight, 50, true, true, false, true);
+        this.scene.matter.world.setBounds(0, 0, this.activeWidth, this.activeHeight, 50, false, false, false, false);
     }
 
     private makeHourglass(): void {
@@ -134,7 +140,7 @@ export class GameView extends Phaser.GameObjects.Container {
                 this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.HOURGLASS.cylinderPartHeight)) ** 2,
             ),
             this.hgWallsThickness,
-            { isStatic: true, angle: Math.PI * 0.175 },
+            { isStatic: true, angle: Math.PI * 0.26 },
         );
 
         const leftBottomVert = this.scene.matter.bodies.rectangle(
@@ -158,7 +164,7 @@ export class GameView extends Phaser.GameObjects.Container {
                 this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.HOURGLASS.cylinderPartHeight)) ** 2,
             ),
             this.hgWallsThickness,
-            { isStatic: true, angle: -Math.PI * 0.175 },
+            { isStatic: true, angle: -Math.PI * 0.26 },
         );
         const bottomLid = this.scene.matter.bodies.rectangle(
             this.activeWidth / 2,
@@ -268,8 +274,8 @@ export class GameView extends Phaser.GameObjects.Container {
                 (this.activeHeight - this.hgHeight) / 2 + this.hgWallsThickness * 2,
                 (this.activeHeight - this.hgHeight) / 2 + VISUALS.HOURGLASS.cylinderPartHeight * this.hgHeight,
             ),
-            3,
-            { restitution: 0, friction: 0.3 },
+            3.5,
+            { restitution: 0.9, friction: 0.3 },
         );
         //this.scene.matter.body.scale(ball, this.particlesConfig.size, this.particlesConfig.size);
         this.particlesTop.push(ball);
