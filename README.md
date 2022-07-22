@@ -1,18 +1,20 @@
-# phaser3-starting-template
 
-Phaser 3 starting template
+The task was to emulate real-physics sand timer.
 
-ToDo
+ + Non physics particles transfer to lower part of the hourglass (particles reposition)
+ + Sync particles reposition (drop) with current time period
+ + Set any time period (up to 9999s)
+ + Restart clock
+ + Added pinwheel under dropping particles just for fun
 
--   Simplify buttons implementation
--   Text config
--   Add useful functions
+ - Didn't make hourglass rotation on reset
+ - Been unable to reproduce sand physics
+ - Been unable to make complex geometry physical body of a hourglass
+ - Project heavily loads desktop processor and performs very bad on mobiles
 
-Some hints on using this templates
+  [Canvas Liquid Effect](https://github.com/n3r4zzurr0/canvas-liquid-effect) project inspired me to try [Matter.js](https://github.com/liabru/matter-js) and make a real-physics sand timer.
+Particles falling through the bottleneck are emulated by searching for lowest particles in the top part and changing its position to just under the bottleneck. This process is synchronized with the timer so that all particles drop at the exact period.
+UI elements include customizable timer (only in seconds) and ribbons with the help text below hourglass.
+It's hard to work with Matter.js in Phaser, especially in Typescript, since all the Matter.js examples that I've found have different syntax, classes and interfaces. So the only help that can be used is the [Phaser docs Matter section](https://photonstorm.github.io/phaser3-docs/Phaser.Physics.Matter.html). 
 
--   ASSETS GENERATION and LOADING is fully AUTOMATED. But PLEASE, follow the instructions below
--   If you need another spriteSheet to be generated, then add a folder in `src/assets/images` folder and add your images there. The name of the folder will also be the name of the corresponding spriteSheet
--   If there images that are too large and you don't want them to be in a spriteSheet, add them to `src/assets/uncompressed` folder
--   To use spine, please, insert all the spine files into one folder and name the folder the way you want to use the spine in the game (e.g. `Racoon`) and add them into `src/assets/spines` folder. PLEASE DON'T ADD OTHER FILES IN THE FOLDER
--   If you want to use shaders or videos, please uncomment the corresponding line in `webpack.common.js` file (lines 56-57)
--   In order to use audio, just add the files in `src/assets/audio` folder
+This project uses [Phaser 3 + Typescript starting template](https://github.com/arsenmazmanyan/phaser3-starting-template).
