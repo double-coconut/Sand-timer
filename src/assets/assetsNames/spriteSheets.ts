@@ -1,1 +1,1 @@
-export const spriteSheets: string[] = ["bodies", "buttons"];
+export const spriteSheets: string[] = ["bodies"];
