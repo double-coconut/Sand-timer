@@ -1,8 +1,9 @@
 export const HOURGLASS = {
-    width: 0.3,
-    height: 0.6,
+    width: 0.4,
+    height: 0.7,
     wallsThickness: 0.05,
     cylinderPartHeight: 0.33,
+    inclineLinesAngle: Math.PI * 0.24,
     bottomSpawnPoint: 25, // px below center
     bottomSpawnXJitter: 3, // random spawn point x shift
 };

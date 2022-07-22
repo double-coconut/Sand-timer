@@ -56,6 +56,7 @@ export default class MainScene extends Phaser.Scene {
             } else if (this.state === GAME.STATE.FINISHED) {
                 this.gameView.rotateHourglass();
                 this.uiView.setCounter(this.clockTimer);
+                this.uiView.closeStartHelp();
             }
         });
         this.gameEvents.on(GAME.EVENT.FILLED, () => {
@@ -64,8 +65,12 @@ export default class MainScene extends Phaser.Scene {
         this.gameEvents.on(GAME.EVENT.EMPTY, () => {
             this.state = GAME.STATE.FINISHED;
         });
+        this.gameEvents.on(GAME.EVENT.EDITTIMER, () => {
+            this.uiView.showEditTimerHelp();
+        });
         this.gameEvents.on(GAME.EVENT.SETTIMER, (value) => {
             this.clockTimer = value;
+            this.uiView.closeEditTimerHelp();
         });
     }
 

@@ -1,11 +1,11 @@
 export const COUNTER_LABEL = {
     x: 0, // shift from center
-    y: 70, // shift from top
-    font: "30px Georgia",
+    y: 80, // shift from top
+    font: "36px Courier",
     color: "#ffffff",
     blinkDuration: 400, // ms
     blinkPause: 1200,
-    maxSymbols: 5,
+    maxSymbols: 3,
 };
 
 export const COUNTER_BACK = {
@@ -19,17 +19,18 @@ export const COUNTER_BACK = {
 };
 
 export const MESSAGE = {
-    font: "24px Georgia",
+    font: "28px Arial",
     color: "#ffffff",
-    cFill: 0x000077,
+    cFill: 0x007700,
     aFill: 1.0,
-    backHeight: 40,
+    backHeight: 130,
+    align: "center",
 };
 
 // X sign to remove message
 export const MESSAGE_X = {
-    font: "28px Georgia",
-    color: "#777777",
+    font: "32px Arial",
+    color: "#999999",
     highlightColor: "#ffffff",
     xShift: -MESSAGE.backHeight / 2,
 };
@@ -57,8 +58,10 @@ export const COUNTER_INPUT_KEYS = [
     Phaser.Input.Keyboard.KeyCodes.NUMPAD_ZERO,
 ];
 
+export const COUNTER_VALUES = [15, 30, 60, 120, 600, 1200];
+
 export const MESSAGE_TEXT_START =
     "Click/tap hourglass to start.\nClick again after finish to reset.\nClick counter to set time.";
 
 export const MESSAGE_TEXT_EDIT_COUNTER =
-    "Use keyboard number keys to set time period in seconds.\nBackspace to delete, Enter to set.";
+    "Use keyboard number keys\nto set time period in seconds.\n<Backspace> to delete, <Enter> to set.\nOr just click/tap again for a preset value.";

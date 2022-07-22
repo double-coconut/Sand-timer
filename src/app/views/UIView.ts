@@ -26,27 +26,36 @@ export class UIView extends Phaser.GameObjects.Container {
         this.counter.startCounter();
     }
 
+    public showEditTimerHelp(): void {
+        this.messageStart.close();
+        this.messageEditCounter.show();
+    }
+
+    public closeEditTimerHelp(): void {
+        this.messageEditCounter.close();
+    }
+
+    public closeStartHelp(): void {
+        this.messageStart.close();
+    }
+
     private init(): void {
         this.initCounter();
         //this.handleClicks();
-        //this.initMessages();
+        this.initMessages();
         //this.messageStart.show();
     }
 
     private initMessages(): void {
         this.messageStart = new MessageComponent(this.scene, HUD.MESSAGE_TEXT_START);
+        this.add(this.messageStart);
+        this.messageStart.show();
         this.messageEditCounter = new MessageComponent(this.scene, HUD.MESSAGE_TEXT_EDIT_COUNTER);
+        this.add(this.messageEditCounter);
     }
 
     private initCounter(): void {
         this.counter = new CounterComponent(this.scene, this.gameEvents);
         this.add(this.counter);
     }
-
-    // handles Clicks and Touches
-    // private handleClicks(): void {
-    //     this.scene.input.on("pointerup", (pointer) => {
-    //         if (pointer.leftButtonReleased()) this.gameEvents.emit(GAME.EVENT.CLICK);
-    //     });
-    // }
 }

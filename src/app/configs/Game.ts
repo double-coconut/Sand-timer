@@ -1,6 +1,7 @@
-export const CLOCK_TIME = 12; // in seconds
+export const CLOCK_TIME = 15; // in seconds
 
-export const PARTICLES_NUM = 350;
+export const PARTICLES_NUM = 250;
+export const PARTICLE_SIZE = 5;
 
 export enum STATE {
     FILLING, // particles are being dropped
@@ -13,5 +14,6 @@ export enum EVENT {
     CLOCKCLICK = "eventClickOnClock",
     FILLED = "eventClockFilled",
     EMPTY = "eventClockEmpty",
+    EDITTIMER = "eventEditTimer",
     SETTIMER = "eventSetTimer",
 }

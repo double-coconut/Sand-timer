@@ -7,6 +7,7 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
     private rectBack: Phaser.GameObjects.Rectangle;
     private label: LabelComponent;
     private counter = 0; // seconds
+    private editState = false;
     private posX = this.scene.scale.gameSize.width / 2 + HUD.COUNTER_LABEL.x;
     private posY = HUD.COUNTER_LABEL.y;
     //private readonly counterText = "";
@@ -63,6 +64,17 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
         this.rectBack.setVisible(true);
     }
 
+    // on click/tap after starting to edit counter
+    // for mobile
+    private insertCounterRandomValue(): void {
+        if (this.editState && this.label.text.length === 0) {
+            this.editState = false;
+            this.counter = HUD.COUNTER_VALUES[Phaser.Math.Between(0, HUD.COUNTER_VALUES.length - 1)];
+            this.setInitialValue(this.counter);
+            this.gameEvents.emit(EVENT.SETTIMER, this.counter);
+        }
+    }
+
     private init(): void {
         this.initBkg();
         this.initLabel();
@@ -85,7 +97,7 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
     }
 
     private inputCounter(): void {
-        if (!this.tweenCountDown.isPlaying()) {
+        if (!this.tweenCountDown.isPlaying() && this.editState) {
             this.stopBlinkCounter();
             this.label.setText("");
             this.scene.input.keyboard.on("keydown", (event) => {
@@ -97,7 +109,9 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
                 ) {
                     this.label.text += event.key;
                 } else if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.ENTER) {
-                    this.counter = parseInt(this.label.text);
+                    this.editState = false;
+                    const newVal = parseInt(this.label.text);
+                    if (Number.isInteger(newVal)) this.counter = newVal;
                     this.setInitialValue(this.counter);
                     this.gameEvents.emit(EVENT.SETTIMER, this.counter);
                 }
@@ -123,7 +137,14 @@ export default class CounterComponent extends Phaser.GameObjects.Container {
             )
             .on("pointerover", () => this.blinkCounter())
             .on("pointerout", () => this.stopBlinkCounter())
-            .on("pointerdown", () => this.inputCounter());
+            .on("pointerdown", () => {
+                if (this.editState) this.insertCounterRandomValue();
+                else {
+                    this.gameEvents.emit(EVENT.EDITTIMER);
+                    this.editState = true;
+                    this.inputCounter();
+                }
+            });
         this.add(this.rectBack);
     }
 

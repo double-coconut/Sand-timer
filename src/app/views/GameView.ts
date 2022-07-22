@@ -140,7 +140,7 @@ export class GameView extends Phaser.GameObjects.Container {
                 this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.HOURGLASS.cylinderPartHeight)) ** 2,
             ),
             this.hgWallsThickness,
-            { isStatic: true, angle: Math.PI * 0.26 },
+            { isStatic: true, angle: VISUALS.HOURGLASS.inclineLinesAngle },
         );
 
         const leftBottomVert = this.scene.matter.bodies.rectangle(
@@ -164,7 +164,7 @@ export class GameView extends Phaser.GameObjects.Container {
                 this.hgWidth * this.hgWidth + (this.hgHeight * (1 - 2 * VISUALS.HOURGLASS.cylinderPartHeight)) ** 2,
             ),
             this.hgWallsThickness,
-            { isStatic: true, angle: -Math.PI * 0.26 },
+            { isStatic: true, angle: -VISUALS.HOURGLASS.inclineLinesAngle },
         );
         const bottomLid = this.scene.matter.bodies.rectangle(
             this.activeWidth / 2,
@@ -274,8 +274,8 @@ export class GameView extends Phaser.GameObjects.Container {
                 (this.activeHeight - this.hgHeight) / 2 + this.hgWallsThickness * 2,
                 (this.activeHeight - this.hgHeight) / 2 + VISUALS.HOURGLASS.cylinderPartHeight * this.hgHeight,
             ),
-            3.5,
-            { restitution: 0.95, friction: 0.3 },
+            GAME.PARTICLE_SIZE,
+            { restitution: 0.1, friction: 0.3 },
         );
         //this.scene.matter.body.scale(ball, this.particlesConfig.size, this.particlesConfig.size);
         this.particlesTop.push(ball);
